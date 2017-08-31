@@ -6,9 +6,12 @@
 
   :min-lein-version "2.7.1"
 
-  :dependencies [[org.clojure/clojure "1.9.0-alpha17"]
+  :dependencies [[day8.re-frame/http-fx "0.1.4"]
+                 [re-frame "0.9.4"]
+                 [org.clojure/clojure "1.9.0-alpha17"]
                  [org.clojure/clojurescript "1.9.908"]
-                 [org.clojure/core.async  "0.3.443"]]
+                 [org.clojure/core.async  "0.3.443"
+                  :exclusions [org.clojure/tools.reader]]]
 
   :plugins [[lein-figwheel "0.5.13"]
             [lein-cljsbuild "1.1.7" :exclusions [[org.clojure/clojure]]]]
@@ -83,7 +86,7 @@
              ;; :server-logfile "tmp/logs/figwheel-logfile.log"
 
              ;; to pipe all the output to the repl
-             ;; :server-logfile false
+             :server-logfile false
              }
 
 

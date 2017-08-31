@@ -1,17 +1,60 @@
 (ns pwdgenerator-re-frame.core
-    (:require ))
+  (:require [reagent.core :as reagent]
+            [re-frame.core :as rf]))
 
-(enable-console-print!)
+(rf/reg-event-db
+ :initialize
+ (fn [_ _]
+   {}))
 
-(println "This text is printed from src/pwdgenerator-re-frame/core.cljs. Go ahead and edit it and see reloading in action.")
+(def password-validations
+  [["At least 12 characters"
+    (fn [s]
+      (>= (count s) 12))]
+   ["At least 50% unique characters"
+    (fn [s]
+      (-> s
+          set
+          count
+          (/ (count s))
+          (>= 0.5)))]])
 
-;; define your app data so that it doesn't get over-written on reload
+(defn pwdgenerator [pw]
+  (let [s (reagent/atom {:value pw})]
+    (fn []
+      (let [validations (for [[desc f] password-validations]
+                          [desc (f (:value @s))])
+            valid? (every? identity (map second validations))
+            color (when (:dirty? @s) (if valid? "green" "red"))]
+       [:form
+        [:label {:style {:color color}} "Password"]
+        [:input {:type (if (:show? @s) :text :password)
+                 :style {:width "100%"
+                         :border (str "1px solid " color)}
+                 :value (:value @s)
+                 :on-focus #(swap! s assoc :focus? true)
+                 :on-blur #(swap! s assoc :dirty? true)
+                 :on-change #(swap! s assoc
+                                    :dirty? true
+                                    :value
+                                    (-> % .-target .-value))}]
+        [:label [:input {:type :checkbox
+                         :checked (:show? @s)
+                         :on-change #(swap! s assoc
+                                            :show?
+                                            (-> % .-target .-checked))}]
+         " Show password?"]
+        (for [[desc valid?] validations]
+          (when (:focus? @s)
+            [:div {:style {:color (when (:dirty? @s)
+                                    (if valid? "green" "red"))}}
+             (when (:dirty? @s) (if valid? "✔ " "✘ "))
+             desc]))]))))
 
-(defonce app-state (atom {:text "Hello world!"}))
+(defn ui []
+  [:div
+   [pwdgenerator ""]])
 
-
-(defn on-js-reload []
-  ;; optionally touch your app-state to force rerendering depending on
-  ;; your application
-  ;; (swap! app-state update-in [:__figwheel_counter] inc)
-)
+(when-some [el (js/document.getElementById "pwdgenerator")]
+  (defonce _init (rf/dispatch-sync [:initialize]))
+  (reagent/render [ui] el))

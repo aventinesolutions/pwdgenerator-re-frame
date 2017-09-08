@@ -51,13 +51,17 @@
                                              (-> % .-target .-checked))}]
           " Show password?"]
          [:br]
-         [:label "Number of Upper Case Alpha Characters " [:input {:type :text :size 3 :maxLength 3}]]
+         [:label "Number of Upper Case Alpha Characters "
+          [:input {:type :text :size 3 :maxLength 3 :value (:no_uppercase_alpha @s)}]]
          [:br]
-         [:label "Number of Lower Case Alpha Characters " [:input {:type :text :size 3 :maxLength 3}]]
+         [:label "Number of Lower Case Alpha Characters "
+          [:input {:type :text :size 3 :maxLength 3 :value (:no_lowercase_alpha @s)}]]
          [:br]
-         [:label "Number of Numeric Characters " [:input {:type :text :size 3 :maxLength 3}]]
+         [:label "Number of Numeric Characters "
+          [:input {:type :text :size 3 :maxLength 3 :value (:no_numerics @s)}]]
          [:br]
-         [:label "Number of Symbol Characters " [:input {:type :text :size 3 :maxLength 3}]]
+         [:label "Number of Symbol Characters "
+          [:input {:type :text :size 3 :maxLength 3 :value (:no_symbols @s)}]]
          (for [[desc valid?] validations]
            (when (:focus? @s)
              [:div {:style {:color (when (:dirty? @s)

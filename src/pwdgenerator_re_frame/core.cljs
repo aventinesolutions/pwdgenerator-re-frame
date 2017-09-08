@@ -52,16 +52,32 @@
           " Show password?"]
          [:br]
          [:label "Number of Upper Case Alpha Characters "
-          [:input {:type :text :size 3 :maxLength 3 :value (:no_uppercase_alpha @s)}]]
+          [:input {:type :text
+                   :size 3
+                   :maxLength 3
+                   :value (:no_uppercase_alpha @s)
+                   :on-change #(swap! s assoc :no_uppercase_alpha (-> % .-target .-value))}]]
          [:br]
          [:label "Number of Lower Case Alpha Characters "
-          [:input {:type :text :size 3 :maxLength 3 :value (:no_lowercase_alpha @s)}]]
+          [:input {:type :text
+                   :size 3
+                   :maxLength 3
+                   :value (:no_lowercase_alpha @s)
+                   :on-change #(swap! s assoc :no_lowercase_alpha (-> % .-target .-value))}]]
          [:br]
          [:label "Number of Numeric Characters "
-          [:input {:type :text :size 3 :maxLength 3 :value (:no_numerics @s)}]]
+          [:input {:type :text
+                   :size 3
+                   :maxLength 3
+                   :value (:no_numerics @s)
+                   :on-change #(swap! s assoc :no_numerics (-> % .-target .-value))}]]
          [:br]
          [:label "Number of Symbol Characters "
-          [:input {:type :text :size 3 :maxLength 3 :value (:no_symbols @s)}]]
+          [:input {:type :text
+                   :size 3
+                   :maxLength 3
+                   :value (:no_symbols @s)
+                   :on-change #(swap! s assoc :no_symbols (-> % .-target .-value))}]]
          (for [[desc valid?] validations]
            (when (:focus? @s)
              [:div {:style {:color (when (:dirty? @s)

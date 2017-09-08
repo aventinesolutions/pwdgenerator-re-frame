@@ -20,36 +20,50 @@
           (>= 0.5)))]])
 
 (defn pwdgenerator [pw]
-  (let [s (reagent/atom {:value pw})]
+  (let [s (reagent/atom {:value pw
+                         :no_uppercase_alpha 5
+                         :no_lowercase_alpha 5
+                         :no_symbols 1
+                         :no_numerics 3
+                         :word_separator " "})]
     (fn []
       (let [validations (for [[desc f] password-validations]
                           [desc (f (:value @s))])
             valid? (every? identity (map second validations))
             color (when (:dirty? @s) (if valid? "green" "red"))]
-       [:form
-        [:label {:style {:color color}} "Password"]
-        [:input {:type (if (:show? @s) :text :password)
-                 :style {:width "100%"
-                         :border (str "1px solid " color)}
-                 :value (:value @s)
-                 :on-focus #(swap! s assoc :focus? true)
-                 :on-blur #(swap! s assoc :dirty? true)
-                 :on-change #(swap! s assoc
-                                    :dirty? true
-                                    :value
-                                    (-> % .-target .-value))}]
-        [:label [:input {:type :checkbox
-                         :checked (:show? @s)
-                         :on-change #(swap! s assoc
-                                            :show?
-                                            (-> % .-target .-checked))}]
-         " Show password?"]
-        (for [[desc valid?] validations]
-          (when (:focus? @s)
-            [:div {:style {:color (when (:dirty? @s)
-                                    (if valid? "green" "red"))}}
-             (when (:dirty? @s) (if valid? "✔ " "✘ "))
-             desc]))]))))
+        [:form
+         [:div {:id :dbdump} (pr-str @s)] 
+         [:label {:style {:color color}} "Password"]
+         [:input {:type (if (:show? @s) :text :password)
+                  :style {:width "100%"
+                          :border (str "1px solid " color)}
+                  :value (:value @s)
+                  :on-focus #(swap! s assoc :focus? true)
+                  :on-blur #(swap! s assoc :dirty? true)
+                  :on-change #(swap! s assoc
+                                     :dirty? true
+                                     :value
+                                     (-> % .-target .-value))}]
+         [:label [:input {:type :checkbox
+                          :checked (:show? @s)
+                          :on-change #(swap! s assoc
+                                             :show?
+                                             (-> % .-target .-checked))}]
+          " Show password?"]
+         [:br]
+         [:label "Number of Upper Case Alpha Characters " [:input {:type :text :size 3 :maxLength 3}]]
+         [:br]
+         [:label "Number of Lower Case Alpha Characters " [:input {:type :text :size 3 :maxLength 3}]]
+         [:br]
+         [:label "Number of Numeric Characters " [:input {:type :text :size 3 :maxLength 3}]]
+         [:br]
+         [:label "Number of Symbol Characters " [:input {:type :text :size 3 :maxLength 3}]]
+         (for [[desc valid?] validations]
+           (when (:focus? @s)
+             [:div {:style {:color (when (:dirty? @s)
+                                     (if valid? "green" "red"))}}
+              (when (:dirty? @s) (if valid? "✔ " "✘ "))
+              desc]))]))))
 
 (defn ui []
   [:div

@@ -21,6 +21,7 @@
 
 (defn pwdgenerator [pw]
   (let [s (reagent/atom {:value pw
+                         :no_words 5
                          :no_uppercase_alpha 5
                          :no_lowercase_alpha 5
                          :no_symbols 1
@@ -51,6 +52,13 @@
                                              (-> % .-target .-checked))}]
           " Show password?"]
          [:br]
+         [:label "Number of Words "
+          [:input {:type :text
+                   :size 3
+                   :maxLength 3
+                   :value (:no_words @s)
+                   :on-change #(swap! s assoc :no_words (-> % .-target .-value))}]]
+         [:br]
          [:label "Number of Upper Case Alpha Characters "
           [:input {:type :text
                    :size 3
@@ -78,6 +86,13 @@
                    :maxLength 3
                    :value (:no_symbols @s)
                    :on-change #(swap! s assoc :no_symbols (-> % .-target .-value))}]]
+         [:br]
+         [:label "Word Separator "
+          [:input {:type :text
+                   :size 3
+                   :maxLength 3
+                   :value (:word_separator @s)
+                   :on-change #(swap! s assoc :word_separator (-> % .-target .-value))}]]
          (for [[desc valid?] validations]
            (when (:focus? @s)
              [:div {:style {:color (when (:dirty? @s)

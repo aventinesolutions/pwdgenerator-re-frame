@@ -18,6 +18,34 @@
                :no_numerics 3
                :word_separator " "})
 
+(def form-field-defs {:no_words {:label "Number of Words "
+                                 :size 3
+                                 :maxlength 3}
+                      :uppercase {:label "Upper Case Alpha Character Set "
+                                  :size 35
+                                  :maxlength 26}
+                      :no_uppercase_alpha {:label "Number of Upper Case Alpha Characters "
+                                           :size 3
+                                           :maxlength 3}
+                      :lowercase {:label "Lower Case Alpha Character Set "
+                                  :size 35
+                                  :maxlength 26}
+                      :no_lowercase_alpha {:label "Number of Lower Case Alpha Characters "
+                                           :size 3
+                                           :maxlength 3}
+                      :numerics {:label "Numeric Character Set "
+                                  :size 10
+                                 :maxlength 10}
+                      :no_numerics {:label "Number of Numeric Characters "
+                                    :size 3
+                                    :maxlength 3}
+                      :symbols {:label "Symbol Character Set "
+                                :size 10
+                                :maxlength 10}
+                      :no_symbols {:label "Number of Symbol Characters "
+                                   :size 3
+                                   :maxlength 3}})
+
 (def password-validations
   [["At least 12 characters"
     (fn [s]
@@ -30,6 +58,19 @@
           (/ (count s))
           (>= 0.5)))]])
 
+(defn form-field [field s]
+  (let [defs (field form-field-defs)]
+    [:div {:id (str field "-input")}
+     [:label (:label defs) 
+      [:input {:type :text
+               :size (:size defs)
+               :maxLength (:maxlength defs)
+               :value (field @s)
+               :on-change #(swap! s assoc field (-> % .-target .-value))}]]]))
+
+(defn form-fields [s]
+  (map #(form-field % s) (keys form-field-defs)))
+
 (defn pwdgenerator [pw]
   (let [s (reagent/atom (merge defaults {:value pw}))]
     (fn []
@@ -38,7 +79,8 @@
             valid? (every? identity (map second validations))
             color (when (:dirty? @s) (if valid? "green" "red"))]
         [:form
-         [:div {:id :dbdump} (pr-str @s)] 
+         [:div {:id :dbdump} (pr-str @s)]
+         [:div {:id :debugger}]
          [:label {:style {:color color}} "Password"]
          [:input {:type (if (:show? @s) :text :password)
                   :style {:width "100%"
@@ -50,83 +92,22 @@
                                      :dirty? true
                                      :value
                                      (-> % .-target .-value))}]
-         [:label [:input {:type :checkbox
-                          :checked (:show? @s)
-                          :on-change #(swap! s assoc
-                                             :show?
-                                             (-> % .-target .-checked))}]
-          " Show password?"]
-         [:br]
-         [:label "Number of Words "
-          [:input {:type :text
-                   :size 3
-                   :maxLength 3
-                   :value (:no_words @s)
-                   :on-change #(swap! s assoc :no_words (-> % .-target .-value))}]]
-         [:br]
-         [:label "Upper Case Alpha Character Set "
-          [:input {:type :text
-                   :size 35
-                   :maxLength 26
-                   :value (:uppercase @s)
-                   :on-change #(swap! s assoc :uppercase (-> % .-target .-value))}]]
-         [:br]
-         [:label "Number of Upper Case Alpha Characters "
-          [:input {:type :text
-                   :size 3
-                   :maxLength 3
-                   :value (:no_uppercase_alpha @s)
-                   :on-change #(swap! s assoc :no_uppercase_alpha (-> % .-target .-value))}]]
-         [:br]
-         [:label "Lower Case Alpha Character Set "
-          [:input {:type :text
-                   :size 35
-                   :maxLength 26
-                   :value (:lowercase @s)
-                   :on-change #(swap! s assoc :lowercase (-> % .-target .-value))}]]
-         [:br]
-         [:label "Number of Lower Case Alpha Characters "
-          [:input {:type :text
-                   :size 3
-                   :maxLength 3
-                   :value (:no_lowercase_alpha @s)
-                   :on-change #(swap! s assoc :no_lowercase_alpha (-> % .-target .-value))}]]
-         [:br]
-         [:label "Numeric Character Set "
-          [:input {:type :text
-                   :size 10
-                   :maxLength 10
-                   :value (:numerics @s)
-                   :on-change #(swap! s assoc :numerics (-> % .-target .-value))}]]
-         [:br]
-         [:label "Number of Numeric Characters "
-          [:input {:type :text
-                   :size 3
-                   :maxLength 3
-                   :value (:no_numerics @s)
-                   :on-change #(swap! s assoc :no_numerics (-> % .-target .-value))}]]
-         [:br]
-         [:label "Symbol Character Set "
-          [:input {:type :text
-                   :size 15
-                   :maxLength 15
-                   :value (:symbols @s)
-                   :on-change #(swap! s assoc :symbols (-> % .-target .-value))}]]
-         [:br]
-         [:label "Number of Symbol Characters "
-          [:input {:type :text
-                   :size 3
-                   :maxLength 3
-                   :value (:no_symbols @s)
-                   :on-change #(swap! s assoc :no_symbols (-> % .-target .-value))}]]
-         [:br]
-         [:label "Word Separator "
-          [:input {:type :text
-                   :size 3
-                   :maxLength 3
-                   :value (:word_separator @s)
-                   :on-change #(swap! s assoc :word_separator (-> % .-target .-value))}]
-          " " (pr-str (:word_separator @s))]
+         [:div {:id "show-password-input"}
+          [:label [:input {:type :checkbox
+                           :checked (:show? @s)
+                           :on-change #(swap! s assoc
+                                              :show?
+                                              (-> % .-target .-checked))}]
+           " Show password?"]]
+         (form-fields s)
+         [:div {:id "word-separtor-input"}
+          [:label "Word Separator "
+           [:input {:type :text
+                    :size 3
+                    :maxLength 3
+                    :value (:word_separator @s)
+                    :on-change #(swap! s assoc :word_separator (-> % .-target .-value))}]
+           " " (pr-str (:word_separator @s))]]
          (for [[desc valid?] validations]
            (when (:focus? @s)
              [:div {:style {:color (when (:dirty? @s)

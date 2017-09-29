@@ -3,11 +3,6 @@
             [re-frame.core :as rf]
             [clojure.string :as s]))
 
-(rf/reg-event-db
- :initialize
- (fn [_ _]
-   {}))
-
 (def defaults {:no_words 5
                :uppercase "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                :no_uppercase_alpha 5
@@ -22,39 +17,48 @@
 (def form-field-defs {:no_words {:order 1
                                  :label "Number of Words "
                                  :size 3
-                                 :maxlength 3}
+                                 :maxlength 3
+                                 :numeric? true}
                       :uppercase {:order 2
                                   :label "Upper Case Alpha Character Set "
                                   :size 35
-                                  :maxlength 26}
+                                  :maxlength 26
+                                  numeric? false}
                       :no_uppercase_alpha {:order 3
                                            :label "Number of Upper Case Alpha Characters "
                                            :size 3
-                                           :maxlength 3}
+                                           :maxlength 3
+                                           :numeric? true}
                       :lowercase {:order 4
                                   :label "Lower Case Alpha Character Set "
                                   :size 35
-                                  :maxlength 26}
+                                  :maxlength 26
+                                  :numeric? false}
                       :no_lowercase_alpha {:order 5
                                            :label "Number of Lower Case Alpha Characters "
                                            :size 3
-                                           :maxlength 3}
+                                           :maxlength 3
+                                           :numeric? true}
                       :numerics {:order 6
                                  :label "Numeric Character Set "
                                  :size 10
-                                 :maxlength 10}
+                                 :maxlength 10
+                                 :numeric? false}
                       :no_numerics {:order 7
                                     :label "Number of Numeric Characters "
                                     :size 3
-                                    :maxlength 3}
+                                    :maxlength 3
+                                    :numeric? true}
                       :symbols {:order 8
                                 :label "Symbol Character Set "
                                 :size 10
-                                :maxlength 10}
+                                :maxlength 10
+                                :numeric? false}
                       :no_symbols {:order 9
                                    :label "Number of Symbol Characters "
                                    :size 3
-                                   :maxlength 3}})
+                                   :maxlength 3
+                                   :numeric? true}})
 
 (def password-validations
   [["At least 12 characters"
@@ -109,21 +113,36 @@
 (defn generate-pw [params]
   (s/join (:word_separator params) (all-words params)))
 
-(defn pwdgenerator [pw]
-  (let [s (reagent/atom (merge defaults {:value pw}))]
+(rf/reg-event-db
+ :initialize
+ (fn [_ _]
+   {:value (generate-pw defaults)}))
+
+(rf/reg-event-db
+ :generate
+ (fn [db [_ s]]
+   (assoc db :value (generate-pw s))))
+
+(rf/reg-sub
+ :value
+ (fn [db] (:value db)))
+
+(defn pwdgenerator []
+  (let [s (reagent/atom (merge defaults {:show? true}))]
     (fn []
-      (let [validations (for [[desc f] password-validations]
+      (let [value @(rf/subscribe [:value])
+            validations (for [[desc f] password-validations]
                           [desc (f (:value @s))])
             valid? (every? identity (map second validations))
             color (when (:dirty? @s) (if valid? "green" "red"))]
         [:form
          [:div {:id :dbdump} (pr-str @s)]
-         [:div {:id :debugger} (pr-str (generate-pw @s))]
+         [:div {:id :params} (pr-str value)]
          [:label {:style {:color color}} "Password"]
          [:input {:type (if (:show? @s) :text :password)
                   :style {:width "100%"
                           :border (str "1px solid " color)}
-                  :value (:value @s)
+                  :value value
                   :on-focus #(swap! s assoc :focus? true)
                   :on-blur #(swap! s assoc :dirty? true)
                   :on-change #(swap! s assoc
@@ -138,7 +157,7 @@
                                               (-> % .-target .-checked))}]
            " Show password?"]]
          (form-fields s)
-         [:div {:id "word-separtor-input"}
+         [:div {:id "word-separator-input"}
           [:label "Word Separator "
            [:input {:type :text
                     :size 3
@@ -146,6 +165,9 @@
                     :value (:word_separator @s)
                     :on-change #(swap! s assoc :word_separator (-> % .-target .-value))}]
            " " (pr-str (:word_separator @s))]]
+         [:div {:id :regenerate :on-click
+                   (fn []
+                     (rf/dispatch [:generate @s])) } "Regenerate"]
          (for [[desc valid?] validations]
            (when (:focus? @s)
              [:div {:style {:color (when (:dirty? @s)
@@ -155,7 +177,7 @@
 
 (defn ui []
   [:div
-   [pwdgenerator (generate-pw defaults)]])
+   [pwdgenerator]])
 
 (when-some [el (js/document.getElementById "pwdgenerator")]
   (defonce _init (rf/dispatch-sync [:initialize]))

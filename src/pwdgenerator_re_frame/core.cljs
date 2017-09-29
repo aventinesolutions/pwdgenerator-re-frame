@@ -1,6 +1,7 @@
 (ns pwdgenerator-re-frame.core
   (:require [reagent.core :as reagent]
-            [re-frame.core :as rf]))
+            [re-frame.core :as rf]
+            [clojure.string :as s]))
 
 (rf/reg-event-db
  :initialize
@@ -105,7 +106,8 @@
      (take (:no_words params)
            (repeatedly #((nth generators (rand-int (count generators))) params))))))
 
-(defn generate-pw [params])
+(defn generate-pw [params]
+  (s/join (:word_separator params) (all-words params)))
 
 (defn pwdgenerator [pw]
   (let [s (reagent/atom (merge defaults {:value pw}))]
@@ -116,7 +118,7 @@
             color (when (:dirty? @s) (if valid? "green" "red"))]
         [:form
          [:div {:id :dbdump} (pr-str @s)]
-         [:div {:id :debugger} (pr-str (all-words @s))]
+         [:div {:id :debugger} (pr-str (generate-pw @s))]
          [:label {:style {:color color}} "Password"]
          [:input {:type (if (:show? @s) :text :password)
                   :style {:width "100%"
@@ -153,7 +155,7 @@
 
 (defn ui []
   [:div
-   [pwdgenerator ""]])
+   [pwdgenerator (generate-pw defaults)]])
 
 (when-some [el (js/document.getElementById "pwdgenerator")]
   (defonce _init (rf/dispatch-sync [:initialize]))

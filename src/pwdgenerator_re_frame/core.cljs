@@ -18,31 +18,40 @@
                :no_numerics 3
                :word_separator " "})
 
-(def form-field-defs {:no_words {:label "Number of Words "
+(def form-field-defs {:no_words {:order 1
+                                 :label "Number of Words "
                                  :size 3
                                  :maxlength 3}
-                      :uppercase {:label "Upper Case Alpha Character Set "
+                      :uppercase {:order 2
+                                  :label "Upper Case Alpha Character Set "
                                   :size 35
                                   :maxlength 26}
-                      :no_uppercase_alpha {:label "Number of Upper Case Alpha Characters "
+                      :no_uppercase_alpha {:order 3
+                                           :label "Number of Upper Case Alpha Characters "
                                            :size 3
                                            :maxlength 3}
-                      :lowercase {:label "Lower Case Alpha Character Set "
+                      :lowercase {:order 4
+                                  :label "Lower Case Alpha Character Set "
                                   :size 35
                                   :maxlength 26}
-                      :no_lowercase_alpha {:label "Number of Lower Case Alpha Characters "
+                      :no_lowercase_alpha {:order 5
+                                           :label "Number of Lower Case Alpha Characters "
                                            :size 3
                                            :maxlength 3}
-                      :numerics {:label "Numeric Character Set "
-                                  :size 10
+                      :numerics {:order 6
+                                 :label "Numeric Character Set "
+                                 :size 10
                                  :maxlength 10}
-                      :no_numerics {:label "Number of Numeric Characters "
+                      :no_numerics {:order 7
+                                    :label "Number of Numeric Characters "
                                     :size 3
                                     :maxlength 3}
-                      :symbols {:label "Symbol Character Set "
+                      :symbols {:order 8
+                                :label "Symbol Character Set "
                                 :size 10
                                 :maxlength 10}
-                      :no_symbols {:label "Number of Symbol Characters "
+                      :no_symbols {:order 9
+                                   :label "Number of Symbol Characters "
                                    :size 3
                                    :maxlength 3}})
 
@@ -69,7 +78,7 @@
                :on-change #(swap! s assoc field (-> % .-target .-value))}]]]))
 
 (defn form-fields [s]
-  (map #(form-field % s) (keys form-field-defs)))
+  (map #(form-field % s) (sort-by #(:order (% form-field-defs)) (keys form-field-defs))))
 
 (defn pwdgenerator [pw]
   (let [s (reagent/atom (merge defaults {:value pw}))]

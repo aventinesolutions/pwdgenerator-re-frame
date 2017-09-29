@@ -80,6 +80,12 @@
 (defn form-fields [s]
   (map #(form-field % s) (sort-by #(:order (% form-field-defs)) (keys form-field-defs))))
 
+(defn random-char [s]
+  (nth s (rand-int (count s))))
+
+(defn random-string [len s]
+  (apply str (take len (repeatedly #(random-char s)))))
+
 (defn pwdgenerator [pw]
   (let [s (reagent/atom (merge defaults {:value pw}))]
     (fn []
@@ -89,7 +95,7 @@
             color (when (:dirty? @s) (if valid? "green" "red"))]
         [:form
          [:div {:id :dbdump} (pr-str @s)]
-         [:div {:id :debugger}]
+         [:div {:id :debugger} (pr-str (random-string (:no_lowercase_alpha @s) (:lowercase @s)))]
          [:label {:style {:color color}} "Password"]
          [:input {:type (if (:show? @s) :text :password)
                   :style {:width "100%"

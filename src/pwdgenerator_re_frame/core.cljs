@@ -86,6 +86,14 @@
 (defn random-string [len s]
   (apply str (take len (repeatedly #(random-char s)))))
 
+(defn uppercase-word [params]
+  (random-string (:no_uppercase_alpha params) (:uppercase params)))
+
+(defn lowercase-word [params]
+  (random-string (:no_lowercase_alpha params) (:lowercase params)))
+
+(defn generate-pw [params])
+
 (defn pwdgenerator [pw]
   (let [s (reagent/atom (merge defaults {:value pw}))]
     (fn []
@@ -95,7 +103,7 @@
             color (when (:dirty? @s) (if valid? "green" "red"))]
         [:form
          [:div {:id :dbdump} (pr-str @s)]
-         [:div {:id :debugger} (pr-str (random-string (:no_lowercase_alpha @s) (:lowercase @s)))]
+         [:div {:id :debugger} (pr-str (uppercase-word @s) (lowercase-word @s))]
          [:label {:style {:color color}} "Password"]
          [:input {:type (if (:show? @s) :text :password)
                   :style {:width "100%"

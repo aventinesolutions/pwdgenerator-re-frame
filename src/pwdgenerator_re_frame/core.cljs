@@ -92,6 +92,19 @@
 (defn lowercase-word [params]
   (random-string (:no_lowercase_alpha params) (:lowercase params)))
 
+(defn numerics-symbols-word [params]
+  (apply str
+   (shuffle
+    (seq
+     (str (random-string (:no_numerics params) (:numerics params))
+          (random-string (:no_symbols params) (:symbols params)))))))
+
+(defn all-words [params]
+  (let [generators [uppercase-word lowercase-word numerics-symbols-word]]
+    (shuffle
+     (take (:no_words params)
+           (repeatedly #((nth generators (rand-int (count generators))) params))))))
+
 (defn generate-pw [params])
 
 (defn pwdgenerator [pw]
@@ -103,7 +116,7 @@
             color (when (:dirty? @s) (if valid? "green" "red"))]
         [:form
          [:div {:id :dbdump} (pr-str @s)]
-         [:div {:id :debugger} (pr-str (uppercase-word @s) (lowercase-word @s))]
+         [:div {:id :debugger} (pr-str (all-words @s))]
          [:label {:style {:color color}} "Password"]
          [:input {:type (if (:show? @s) :text :password)
                   :style {:width "100%"

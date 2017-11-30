@@ -89,7 +89,8 @@
   (nth s (rand-int (count s))))
 
 (defn random-string [len s]
-  (apply str (take len (repeatedly #(random-char s)))))
+  (let [length (js/parseInt len)]
+    (apply str (take length (repeatedly #(random-char s))))))
 
 (defn uppercase-word [params]
   (random-string (:no_uppercase_alpha params) (:uppercase params)))
@@ -105,10 +106,10 @@
           (random-string (:no_symbols params) (:symbols params)))))))
 
 (defn all-words [params]
-  (let [generators [uppercase-word lowercase-word numerics-symbols-word]]
+  (let [generators [uppercase-word lowercase-word numerics-symbols-word]
+        words (js/parseInt (:no_words params))]
     (shuffle
-     (take (:no_words params)
-           (repeatedly #((nth generators (rand-int (count generators))) params))))))
+     (take words (repeatedly #((nth generators (rand-int (count generators))) params))))))
 
 (defn generate-pw [params]
   (s/join (:word_separator params) (all-words params)))

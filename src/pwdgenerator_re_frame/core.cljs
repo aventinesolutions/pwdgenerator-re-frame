@@ -23,7 +23,7 @@
                                   :label "Upper Case Alpha Character Set "
                                   :size 35
                                   :maxlength 26
-                                  numeric? false}
+                                  :numeric? false}
                       :no_uppercase_alpha {:order 3
                                            :label "Number of Upper Case Alpha Characters "
                                            :size 3

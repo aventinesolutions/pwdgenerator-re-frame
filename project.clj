@@ -6,9 +6,12 @@
 
   :min-lein-version "2.7.1"
 
-  :dependencies [[org.clojure/clojure "1.9.0-alpha17"]
+  :dependencies [[day8.re-frame/http-fx "0.1.4"]
+                 [re-frame "0.9.4"]
+                 [org.clojure/clojure "1.9.0-alpha17"]
                  [org.clojure/clojurescript "1.9.908"]
-                 [org.clojure/core.async  "0.3.443"]]
+                 [org.clojure/core.async  "0.3.443"
+                  :exclusions [org.clojure/tools.reader]]]
 
   :plugins [[lein-figwheel "0.5.13"]
             [lein-cljsbuild "1.1.7" :exclusions [[org.clojure/clojure]]]]
@@ -27,7 +30,8 @@
                            ;; in the default browser once Figwheel has
                            ;; started and compiled your application.
                            ;; Comment this out once it no longer serves you.
-                           :open-urls ["http://localhost:3449/index.html"]}
+                           ;; :open-urls ["http://localhost:3449/index.html"]
+                           }
 
                 :compiler {:main pwdgenerator-re-frame.core
                            :asset-path "js/compiled/out"
@@ -48,8 +52,8 @@
                            :pretty-print false}}]}
 
   :figwheel {;; :http-server-root "public" ;; default and assumes "resources"
-             ;; :server-port 3449 ;; default
-             ;; :server-ip "127.0.0.1"
+             :server-port 3449 ;; default
+             :server-ip "192.168.173.100"
 
              :css-dirs ["resources/public/css"] ;; watch and update CSS
 
@@ -83,7 +87,7 @@
              ;; :server-logfile "tmp/logs/figwheel-logfile.log"
 
              ;; to pipe all the output to the repl
-             ;; :server-logfile false
+             :server-logfile false
              }
 
 

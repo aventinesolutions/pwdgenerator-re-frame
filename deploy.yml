@@ -1,3 +1,4 @@
-remote_base: 'public_html/pwdgenerator-re-frame'
+remote_base: public_html/pwdgenerator-re-frame
+local_base: resources/public
 files:
- -
+ - "**/*"

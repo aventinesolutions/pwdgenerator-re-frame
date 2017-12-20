@@ -32,9 +32,23 @@ task :spec do
   $spec = YAML.load_file('deploy.yml')
 end
 
-desc 'change to base folder'
-task :chdir_base do
+desc 'change to base folder on remote'
+task :goto_remote_base do
   $connection.chdir($spec['remote_base'])
+end
+
+desc 'change to base folder locally'
+task :goto_local_base do
+  Dir.chdir($spec['local_base'])
+end
+
+desc 'deploy the specified local files to the remote server'
+task :deploy_files do
+  $spec['files'].each do |glob|
+    Pathname.glob(glob).each do |path|
+      p path
+    end
+  end
 end
 
 desc 'close FTP connection'

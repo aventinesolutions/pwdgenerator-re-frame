@@ -1,4 +1,6 @@
 require 'dotenv/load'
+require 'net/ftp'
+require 'yaml'
 
 desc 'check environment'
 task :check_env do
@@ -9,5 +11,33 @@ task :check_env do
     errors.push("must define environment value for #{key}") unless val && val.length > 0
   end
   fail errors.join(', ') unless errors.length == 0
-  p "environment is good to go!"
+  puts 'environment is good to go!'
+end
+
+desc 'clean, compile and minify'
+task :compile do
+  `lein clean && lein cljsbuild once min`
+end
+
+desc 'connect to FTP server'
+task connect: :check_env do
+  $connection ||= Net::FTP.new
+  $connection.debug_mode = true
+  $connection.connect(ENV['FTP_SERVER'])
+  $connection.login(ENV['FTP_USER'], ENV['FTP_PASSWORD'])
+end
+
+desc 'read deployment specifications'
+task :spec do
+  $spec = YAML.load_file('deploy.yml')
+end
+
+desc 'change to base folder'
+task :chdir_base do
+  $connection.chdir($spec['remote_base'])
+end
+
+desc 'close FTP connection'
+task :close do
+  $connection.close
 end

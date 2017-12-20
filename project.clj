@@ -1,6 +1,6 @@
 (defproject pwdgenerator-re-frame "0.1.0-SNAPSHOT"
-  :description "React Password Generator using Reframe components"
-  :url "http://aventine.solutions/pwdgenerator"
+  :description "React Password Generator using Re-frame components"
+  :url "http://aventine.solutions/pwdgenerator-re-frame"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
 

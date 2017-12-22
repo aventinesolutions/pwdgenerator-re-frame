@@ -21,7 +21,7 @@ end
 
 desc 'connect to FTP server'
 task connect: :check_env do
-  $connection ||= Net::FTP.new
+  $connection = Net::FTP.new
   $connection.debug_mode = true
   $connection.connect(ENV['FTP_SERVER'])
   $connection.login(ENV['FTP_USER'], ENV['FTP_PASSWORD'])

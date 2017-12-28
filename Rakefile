@@ -18,7 +18,7 @@ class FTPClient
     ftp.connect(ENV['FTP_SERVER'])
     ftp.login(ENV['FTP_USER'], ENV['FTP_PASSWORD'])
     ftp.passive = true
-    ftp.debug_mode = true
+    ftp.debug_mode = ENV['FTP_DEBUG'] ? eval(ENV['FTP_DEBUG']) : false
     ftp.chdir(remote_path)
   end
 

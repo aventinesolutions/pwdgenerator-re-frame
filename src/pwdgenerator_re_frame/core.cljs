@@ -79,7 +79,7 @@
 (defn on-field-change [s field event]
   (do (log event)
       (swap! s assoc field (-> event .-target .-value))
-      (rf/dispatch [:generate s])))
+      (rf/dispatch [:generate @s])))
 
 (defn form-field [field s]
   (let [defs (field form-field-defs)]

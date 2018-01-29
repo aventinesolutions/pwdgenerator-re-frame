@@ -3,6 +3,10 @@
             [re-frame.core :as rf]
             [clojure.string :as s]))
 
+(defmacro log
+  [& msgs]
+  `(.log js/console ~@msgs))
+
 (def defaults {:no_words 5
                :uppercase "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                :no_uppercase_alpha 5
@@ -72,15 +76,20 @@
           (/ (count s))
           (>= 0.5)))]])
 
+(defn on-field-change [s field event]
+  (do (log event)
+      (swap! s assoc field (-> event .-target .-value))
+      (rf/dispatch [:generate s])))
+
 (defn form-field [field s]
   (let [defs (field form-field-defs)]
     [:div {:id (str field "-input")}
-     [:label (:label defs) 
+     [:label (:label defs)
       [:input {:type :text
                :size (:size defs)
                :maxLength (:maxlength defs)
                :value (field @s)
-               :on-change #(swap! s assoc field (-> % .-target .-value))}]]]))
+               :on-change #(on-field-change s field %)}]]]))
 
 (defn form-fields [s]
   (map #(form-field % s) (sort-by #(:order (% form-field-defs)) (keys form-field-defs))))

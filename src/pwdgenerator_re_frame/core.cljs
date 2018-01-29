@@ -3,6 +3,10 @@
             [re-frame.core :as rf]
             [clojure.string :as s]))
 
+(defmacro log
+  [& msgs]
+  `(.log js/console ~@msgs))
+
 (def defaults {:no_words 5
                :uppercase "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                :no_uppercase_alpha 5
@@ -72,15 +76,19 @@
           (/ (count s))
           (>= 0.5)))]])
 
+(defn on-field-change [s field event]
+  (do (swap! s assoc field (-> event .-target .-value))
+      (rf/dispatch [:generate @s])))
+
 (defn form-field [field s]
   (let [defs (field form-field-defs)]
     [:div {:id (str field "-input")}
-     [:label (:label defs) 
+     [:label (:label defs)
       [:input {:type :text
                :size (:size defs)
                :maxLength (:maxlength defs)
                :value (field @s)
-               :on-change #(swap! s assoc field (-> % .-target .-value))}]]]))
+               :on-change #(on-field-change s field %)}]]]))
 
 (defn form-fields [s]
   (map #(form-field % s) (sort-by #(:order (% form-field-defs)) (keys form-field-defs))))
@@ -138,7 +146,6 @@
             color (when (:dirty? @s) (if valid? "green" "red"))]
         [:form
          [:div {:id :dbdump} (pr-str @s)]
-         [:div {:id :params} (pr-str value)]
          [:label {:style {:color color}} "Password"]
          [:input {:type (if (:show? @s) :text :password)
                   :style {:width "100%"
@@ -164,7 +171,7 @@
                     :size 3
                     :maxLength 3
                     :value (:word_separator @s)
-                    :on-change #(swap! s assoc :word_separator (-> % .-target .-value))}]
+                    :on-change #(on-field-change s :word_separator %)}]
            " " (pr-str (:word_separator @s))]]
          [:div {:id :regenerate :on-click
                    (fn []

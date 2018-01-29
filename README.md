@@ -1,4 +1,4 @@
-# pwdgenerator-re-frame
+# Password Generator Re-frame
 
 React password generator using Re-frame components
 
@@ -32,10 +32,26 @@ To create a production build run:
     lein do clean, cljsbuild once min
 
 And open your browser in `resources/public/index.html`. You will not
-get live reloading, nor a REPL. 
+get live reloading, nor a REPL.
 
+## Deploying
+
+This has Ruby Rake tasks for deploying to a server using FTP.
+
+The sample environment would be:
+
+```
+FTP_SERVER="myserver.org"
+FTP_USER="frimmel"
+FTP_PASSWORD="geheim"
+FTP_DEBUG="false"
+```
+Kill the Figwheel development server and just do ...
+```shell
+rake --trace
+```
 ## License
 
-Copyright © 2014 FIXME
+Copyright © 2017 Aventine Solutions
 
 Distributed under the Eclipse Public License either version 1.0 or (at your option) any later version.

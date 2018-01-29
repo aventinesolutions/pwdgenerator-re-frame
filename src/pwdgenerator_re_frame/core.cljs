@@ -77,8 +77,7 @@
           (>= 0.5)))]])
 
 (defn on-field-change [s field event]
-  (do (log event)
-      (swap! s assoc field (-> event .-target .-value))
+  (do (swap! s assoc field (-> event .-target .-value))
       (rf/dispatch [:generate @s])))
 
 (defn form-field [field s]
@@ -147,7 +146,6 @@
             color (when (:dirty? @s) (if valid? "green" "red"))]
         [:form
          [:div {:id :dbdump} (pr-str @s)]
-         [:div {:id :params} (pr-str value)]
          [:label {:style {:color color}} "Password"]
          [:input {:type (if (:show? @s) :text :password)
                   :style {:width "100%"

@@ -173,7 +173,7 @@
                     :size 3
                     :maxLength 3
                     :value (:word_separator @s)
-                    :on-change #(swap! s assoc :word_separator (-> % .-target .-value))}]
+                    :on-change #(on-field-change s :word_separator %)}]
            " " (pr-str (:word_separator @s))]]
          [:div {:id :regenerate :on-click
                    (fn []

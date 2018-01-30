@@ -6,5 +6,8 @@
   "repository": "git@github.com:aventinesolutions/pwdgenerator-re-frame.git",
   "author": "Matthew Eichler <matthew.eichler@aventinesolutions.nl>",
   "license": "MIT",
-  "private": false
+  "private": false,
+  "dependencies": {
+    "uikit": "^3.0.0-beta.38"
+  }
 }
